@@ -27,7 +27,6 @@ public class ResultActivity extends AppCompatActivity {
         btnPlayAgain = findViewById(R.id.btnPlayAgain);
         btnExit = findViewById(R.id.btnExit);
 
-        // Nhận dữ liệu từ RaceActivity
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             winningHorse = extras.getString("winner");
@@ -35,26 +34,21 @@ public class ResultActivity extends AppCompatActivity {
             pointsBefore = extras.getInt("currentPoints");
             betPoints = extras.getInt("betPoints");
 
-            // Hiển thị ngựa thắng
             tvWinner.setText("Ngựa thắng: " + winningHorse);
 
-            // Hiển thị danh sách ngựa đã cược
             tvSelectedHorses.setText("Bạn đã cược: " + selectedHorses.toString());
 
-            // Tính điểm sau cược
             if (selectedHorses.contains(winningHorse)) {
                 currentPoints = pointsBefore + (betPoints * 2);
             } else {
                 currentPoints = pointsBefore - (betPoints / 2);
             }
 
-            // Hiển thị số điểm trước & sau cược
             tvPointsBefore.setText("Số điểm trước cược: " + pointsBefore);
             tvPointsAfter.setText("Số điểm sau cược: " + currentPoints);
             tvBetPoints.setText("Số điểm đặt cược: " + betPoints);
         }
 
-        // Nút chơi lại
         btnPlayAgain.setOnClickListener(view -> {
             Intent intent = new Intent(ResultActivity.this, RaceActivity.class);
             intent.putExtra("currentPoints", currentPoints);
@@ -62,7 +56,6 @@ public class ResultActivity extends AppCompatActivity {
             finish();
         });
 
-        // Nút thoát
         btnExit.setOnClickListener(view -> finishAffinity());
     }
 }
