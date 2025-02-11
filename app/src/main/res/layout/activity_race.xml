@@ -1,0 +1,96 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/bgroundrace">
+
+    <TextView
+        android:id="@+id/tvCurrentPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Điểm: 1000"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="#ffff"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
+    <EditText
+        android:id="@+id/etBetPoints"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Nhập số điểm cược"
+        android:inputType="number"
+        android:padding="8dp"
+        android:background="@android:drawable/editbox_background"
+        app:layout_constraintTop_toBottomOf="@id/tvCurrentPoints"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <CheckBox
+        android:id="@+id/cbHorse1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/etBetPoints"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <SeekBar
+        android:id="@+id/seekBarHorse1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:thumb="@drawable/horse1"
+        app:layout_constraintStart_toEndOf="@id/cbHorse1"
+        app:layout_constraintTop_toTopOf="@id/cbHorse1"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/cbHorse2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/seekBarHorse1"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <SeekBar
+        android:id="@+id/seekBarHorse2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/horse2"
+        app:layout_constraintStart_toEndOf="@id/cbHorse2"
+        app:layout_constraintTop_toTopOf="@id/cbHorse2"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/cbHorse3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/seekBarHorse2"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <SeekBar
+        android:id="@+id/seekBarHorse3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/horse3"
+        app:layout_constraintStart_toEndOf="@id/cbHorse3"
+        app:layout_constraintTop_toTopOf="@id/cbHorse3"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/btnStartRace"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Bắt đầu đua"
+        android:background="@android:color/holo_blue_light"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/seekBarHorse3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
