@@ -2,95 +2,153 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:padding="16dp"
     android:background="@drawable/bgroundrace">
 
+    <!-- Chào tài khoản -->
+    <TextView
+        android:id="@+id/tvWelcomeUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chào, User!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Nút Đăng xuất -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:backgroundTint="#D32F2F"
+        android:padding="8dp"
+        android:text="Đăng xuất"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <!-- Điểm của người chơi -->
     <TextView
         android:id="@+id/tvCurrentPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Điểm: 1000"
-        android:textSize="25sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="#ffff"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        android:textColor="#FFD700"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcomeUser"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"/>
 
+    <!-- Nhập số điểm cược -->
     <EditText
         android:id="@+id/etBetPoints"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Nhập số điểm cược"
         android:inputType="number"
-        android:padding="8dp"
+        android:padding="12dp"
+        android:textSize="18sp"
         android:background="@android:drawable/editbox_background"
         app:layout_constraintTop_toBottomOf="@id/tvCurrentPoints"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="16dp"/>
 
-    <CheckBox
-        android:id="@+id/cbHorse1"
-        android:layout_width="wrap_content"
+    <!-- Danh sách các ngựa để đặt cược -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/etBetPoints"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintTop_toBottomOf="@id/etBetPoints">
 
-    <SeekBar
-        android:id="@+id/seekBarHorse1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:thumb="@drawable/horse1"
-        app:layout_constraintStart_toEndOf="@id/cbHorse1"
-        app:layout_constraintTop_toTopOf="@id/cbHorse1"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- Ngựa 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/cbHorse2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/seekBarHorse1"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>
+            <CheckBox
+                android:id="@+id/cbHorse1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    <SeekBar
-        android:id="@+id/seekBarHorse2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:thumb="@drawable/horse2"
-        app:layout_constraintStart_toEndOf="@id/cbHorse2"
-        app:layout_constraintTop_toTopOf="@id/cbHorse2"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <SeekBar
+                android:id="@+id/seekBarHorse1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:thumb="@drawable/horse1" />
+        </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/cbHorse3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/seekBarHorse2"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>
+        <!-- Ngựa 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-    <SeekBar
-        android:id="@+id/seekBarHorse3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:thumb="@drawable/horse3"
-        app:layout_constraintStart_toEndOf="@id/cbHorse3"
-        app:layout_constraintTop_toTopOf="@id/cbHorse3"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <CheckBox
+                android:id="@+id/cbHorse2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
+            <SeekBar
+                android:id="@+id/seekBarHorse2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:thumb="@drawable/horse2" />
+        </LinearLayout>
+
+        <!-- Ngựa 3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbHorse3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <SeekBar
+                android:id="@+id/seekBarHorse3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:thumb="@drawable/horse3" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Nút Bắt đầu đua -->
     <Button
         android:id="@+id/btnStartRace"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:padding="12dp"
         android:text="Bắt đầu đua"
-        android:background="@android:color/holo_blue_light"
         android:textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/seekBarHorse3"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogout"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

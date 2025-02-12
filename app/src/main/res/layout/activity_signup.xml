@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/background"> <!-- Ảnh nền đua ngựa -->
+
+    <!-- Logo đua ngựa -->
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/logo"
+        android:layout_gravity="center"
+        android:contentDescription="Logo Đua Ngựa"
+        android:scaleType="fitCenter"
+        android:paddingBottom="20dp"/>
+
+    <!-- Ô nhập Tên -->
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tên của bạn"
+        android:inputType="textPersonName"
+        android:background="@drawable/rounded_edittext"
+        android:padding="14dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"/>
+
+    <!-- Ô nhập Email -->
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập Email"
+        android:inputType="textEmailAddress"
+        android:background="@drawable/rounded_edittext"
+        android:padding="14dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Ô nhập Mật khẩu -->
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập Mật Khẩu"
+        android:inputType="textPassword"
+        android:background="@drawable/rounded_edittext"
+        android:padding="14dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Ô xác nhận Mật khẩu -->
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Xác nhận Mật Khẩu"
+        android:inputType="textPassword"
+        android:background="@drawable/rounded_edittext"
+        android:padding="14dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Nút Đăng ký -->
+    <Button
+        android:id="@+id/btnSignup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đăng Ký"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button"
+        android:padding="16dp"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Đã có tài khoản? Đăng nhập -->
+    <TextView
+        android:id="@+id/tvLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đã có tài khoản? Đăng nhập!"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_orange_light"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"/>
+</LinearLayout>
