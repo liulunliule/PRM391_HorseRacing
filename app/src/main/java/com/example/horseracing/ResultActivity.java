@@ -34,9 +34,9 @@ public class ResultActivity extends AppCompatActivity {
             pointsBefore = extras.getInt("currentPoints");
             betPoints = extras.getInt("betPoints");
 
-            tvWinner.setText("Ngựa thắng: " + winningHorse);
+            tvWinner.setText("\uD83C\uDFC7 Ngựa thắng: " + winningHorse);
 
-            tvSelectedHorses.setText("Bạn đã cược: " + selectedHorses.toString());
+            tvSelectedHorses.setText("\uD83D\uDCCC Bạn đã cược: " + selectedHorses.toString());
 
             if (selectedHorses.contains(winningHorse)) {
                 currentPoints = pointsBefore + (betPoints * 2);
@@ -44,9 +44,9 @@ public class ResultActivity extends AppCompatActivity {
                 currentPoints = pointsBefore - (betPoints / 2);
             }
 
-            tvPointsBefore.setText("Số điểm trước cược: " + pointsBefore);
-            tvPointsAfter.setText("Số điểm sau cược: " + currentPoints);
-            tvBetPoints.setText("Số điểm đặt cược: " + betPoints);
+            tvPointsBefore.setText("\uD83D\uDCB0 Số điểm trước cược: " + pointsBefore);
+            tvPointsAfter.setText("\uD83D\uDCC8 Số điểm sau cược: " + currentPoints);
+            tvBetPoints.setText("\uD83C\uDFAF Số điểm đặt cược: " + betPoints);
         }
 
         btnPlayAgain.setOnClickListener(view -> {

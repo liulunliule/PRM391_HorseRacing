@@ -1,6 +1,7 @@
 package com.example.horseracing;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -10,6 +11,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -18,9 +23,11 @@ public class RaceActivity extends AppCompatActivity {
     private CheckBox cbHorse1, cbHorse2, cbHorse3;
     private EditText etBetPoints;
     private Button btnStartRace;
-    private TextView tvCurrentPoints,tvBetPoints;
-
-    private int currentPoints = 1000;
+    private TextView tvCurrentPoints;
+    private Button btnLogout;
+    private String loggedInUser;
+    private TextView tvWelcomeUser;
+    private int currentPoints;
     private int betPoints = 0;
     private Handler handler = new Handler();
     private Random random = new Random();
@@ -31,7 +38,30 @@ public class RaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_race);
 
+        tvWelcomeUser = findViewById(R.id.tvWelcomeUser);
         tvCurrentPoints = findViewById(R.id.tvCurrentPoints);
+
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        loggedInUser = prefs.getString("loggedInUser", null);
+        String usersJson = prefs.getString("users", "{}");
+
+
+        try {
+            JSONObject users = new JSONObject(usersJson);
+            if (loggedInUser != null && users.has(loggedInUser)) {
+                JSONObject userData = users.getJSONObject(loggedInUser);
+                currentPoints = userData.getInt("points");
+
+                tvWelcomeUser.setText("Chào, " + loggedInUser + "!");
+                tvCurrentPoints.setText("Điểm: " + currentPoints);
+            } else {
+                logoutUser();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        btnLogout = findViewById(R.id.btnLogout);
         seekBarHorse1 = findViewById(R.id.seekBarHorse1);
         seekBarHorse2 = findViewById(R.id.seekBarHorse2);
         seekBarHorse3 = findViewById(R.id.seekBarHorse3);
@@ -41,10 +71,11 @@ public class RaceActivity extends AppCompatActivity {
         etBetPoints = findViewById(R.id.etBetPoints);
         btnStartRace = findViewById(R.id.btnStartRace);
 
-        currentPoints = getIntent().getIntExtra("currentPoints", 1000);
+        // Lấy điểm từ SharedPreferences
         tvCurrentPoints.setText("Điểm: " + currentPoints);
 
         btnStartRace.setOnClickListener(view -> startRace());
+        btnLogout.setOnClickListener(view -> logoutUser());
     }
 
     private void startRace() {
@@ -111,8 +142,31 @@ public class RaceActivity extends AppCompatActivity {
     private void finishRace(String winner, ArrayList<String> selectedHorses) {
         isRacing = false;
 
-        Intent intent = new Intent(RaceActivity.this, ResultActivity.class);
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String usersJson = prefs.getString("users", "{}");
 
+        try {
+            JSONObject users = new JSONObject(usersJson);
+            String loggedInUser = prefs.getString("loggedInUser", null);
+
+            if (loggedInUser != null && users.has(loggedInUser)) {
+                JSONObject userData = users.getJSONObject(loggedInUser);
+
+                if (selectedHorses.contains(winner)) {
+                    currentPoints += betPoints; // Thắng được cộng điểm
+                } else {
+                    currentPoints -= betPoints; // Thua bị trừ điểm
+                }
+
+                userData.put("points", currentPoints);
+                users.put(loggedInUser, userData);
+                prefs.edit().putString("users", users.toString()).apply();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(RaceActivity.this, ResultActivity.class);
         intent.putExtra("winner", winner);
         intent.putExtra("selectedHorses", selectedHorses);
         intent.putExtra("currentPoints", currentPoints);
@@ -120,4 +174,14 @@ public class RaceActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    private void logoutUser() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        prefs.edit().remove("loggedInUser").apply();
+
+        Intent intent = new Intent(RaceActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }
+
