@@ -2,9 +2,7 @@ package com.example.horseracing;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -25,17 +23,17 @@ public class RaceActivity extends AppCompatActivity {
     private SeekBar seekBarHorse1, seekBarHorse2, seekBarHorse3;
     private CheckBox cbHorse1, cbHorse2, cbHorse3;
     private EditText etBetPoints;
-    private Button btnStartRace, btnLogout;
-    private TextView tvCurrentPoints, tvWelcomeUser;
+    private Button btnStartRace;
+    private TextView tvCurrentPoints;
+    private Button btnLogout;
     private String loggedInUser;
-    private int currentPoints, betPoints = 0;
-    private boolean isRacing = false;
+    private TextView tvWelcomeUser;
+    private int currentPoints;
+    private int betPoints = 0;
     private Handler handler = new Handler();
     private Random random = new Random();
-
-    private MediaPlayer mediaPlayerBackground, mediaPlayerHorseRace, mediaPlayerHorseWin;
-    private SoundPool soundPool;
-    private int clickSoundId, checkboxSoundId; // ID của âm thanh
+    private boolean isRacing = false;
+    private MediaPlayer mediaPlayer, backgroundMusicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,32 +42,6 @@ public class RaceActivity extends AppCompatActivity {
 
         tvWelcomeUser = findViewById(R.id.tvWelcomeUser);
         tvCurrentPoints = findViewById(R.id.tvCurrentPoints);
-        btnLogout = findViewById(R.id.btnLogout);
-        seekBarHorse1 = findViewById(R.id.seekBarHorse1);
-        seekBarHorse2 = findViewById(R.id.seekBarHorse2);
-        seekBarHorse3 = findViewById(R.id.seekBarHorse3);
-        cbHorse1 = findViewById(R.id.cbHorse1);
-        cbHorse2 = findViewById(R.id.cbHorse2);
-        cbHorse3 = findViewById(R.id.cbHorse3);
-        etBetPoints = findViewById(R.id.etBetPoints);
-        btnStartRace = findViewById(R.id.btnStartRace);
-
-        // 🎵 Khởi động nhạc nền
-        mediaPlayerBackground = MediaPlayer.create(this, R.raw.background_theme);
-        mediaPlayerBackground.setLooping(true);
-        mediaPlayerBackground.start();
-
-        // 🔊 Khởi tạo SoundPool để phát âm thanh khi nhấn nút và chọn checkbox
-        soundPool = new SoundPool.Builder()
-                .setMaxStreams(2)
-                .setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_GAME)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build())
-                .build();
-
-        clickSoundId = soundPool.load(this, R.raw.click_sound, 1); // Âm thanh khi nhấn nút
-        checkboxSoundId = soundPool.load(this, R.raw.pick, 1); // Âm thanh khi chọn checkbox
 
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         loggedInUser = prefs.getString("loggedInUser", null);
@@ -90,20 +62,34 @@ public class RaceActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        btnLogout = findViewById(R.id.btnLogout);
+        seekBarHorse1 = findViewById(R.id.seekBarHorse1);
+        seekBarHorse2 = findViewById(R.id.seekBarHorse2);
+        seekBarHorse3 = findViewById(R.id.seekBarHorse3);
+        cbHorse1 = findViewById(R.id.cbHorse1);
+        cbHorse2 = findViewById(R.id.cbHorse2);
+        cbHorse3 = findViewById(R.id.cbHorse3);
+        etBetPoints = findViewById(R.id.etBetPoints);
+        btnStartRace = findViewById(R.id.btnStartRace);
+
+        // Lấy điểm từ SharedPreferences
+        tvCurrentPoints.setText("Điểm: " + currentPoints);
+
         btnStartRace.setOnClickListener(view -> {
-            soundPool.play(clickSoundId, 1, 1, 0, 0, 1); // 🔊 Phát âm thanh khi nhấn nút
+            playSound(R.raw.click_sound);
             startRace();
         });
 
-        btnLogout.setOnClickListener(view -> {
-            soundPool.play(clickSoundId, 1, 1, 0, 0, 1); // 🔊 Phát âm thanh khi nhấn nút
-            logoutUser();
-        });
+        btnLogout.setOnClickListener(view -> logoutUser());
 
-        // 🔊 Phát âm thanh khác khi chọn checkbox
-        cbHorse1.setOnCheckedChangeListener((buttonView, isChecked) -> soundPool.play(checkboxSoundId, 1, 1, 0, 0, 1));
-        cbHorse2.setOnCheckedChangeListener((buttonView, isChecked) -> soundPool.play(checkboxSoundId, 1, 1, 0, 0, 1));
-        cbHorse3.setOnCheckedChangeListener((buttonView, isChecked) -> soundPool.play(checkboxSoundId, 1, 1, 0, 0, 1));
+        cbHorse1.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+        cbHorse2.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+        cbHorse3.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+
+        // Phát nhạc nền
+        backgroundMusicPlayer = MediaPlayer.create(this, R.raw.background_theme);
+        backgroundMusicPlayer.setLooping(true); // Đặt nhạc nền lặp lại
+        backgroundMusicPlayer.start();
     }
 
     private void startRace() {
@@ -121,42 +107,129 @@ public class RaceActivity extends AppCompatActivity {
             return;
         }
 
-        isRacing = true;
-        btnStartRace.setEnabled(false);
+        ArrayList<String> selectedHorses = new ArrayList<>();
+        if (cbHorse1.isChecked()) selectedHorses.add("Ngựa 1");
+        if (cbHorse2.isChecked()) selectedHorses.add("Ngựa 2");
+        if (cbHorse3.isChecked()) selectedHorses.add("Ngựa 3");
 
-        // 🛑 Dừng nhạc nền trước khi đua
-        if (mediaPlayerBackground != null) {
-            mediaPlayerBackground.stop();
-            mediaPlayerBackground.release();
-            mediaPlayerBackground = null;
+        if (selectedHorses.isEmpty()) {
+            Toast.makeText(this, "Hãy chọn ít nhất một con ngựa để cược!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // 🎵 Phát tiếng ngựa khi bắt đầu đua
-        mediaPlayerHorseRace = MediaPlayer.create(this, R.raw.horse1);
-        mediaPlayerHorseRace.setLooping(true);
-        mediaPlayerHorseRace.start();
+        isRacing = true;
+        btnStartRace.setEnabled(false);
+        seekBarHorse1.setProgress(0);
+        seekBarHorse2.setProgress(0);
+        seekBarHorse3.setProgress(0);
+
+        // Phát tiếng ngựa khi bắt đầu đua
+        playSound(R.raw.horse1);
+
+        final boolean[] raceOver = {false};
+
+        new Thread(() -> {
+            while (!raceOver[0]) {
+                handler.post(() -> {
+                    seekBarHorse1.incrementProgressBy(random.nextInt(5));
+                    seekBarHorse2.incrementProgressBy(random.nextInt(5));
+                    seekBarHorse3.incrementProgressBy(random.nextInt(5));
+
+                    if (seekBarHorse1.getProgress() >= 100) {
+                        raceOver[0] = true;
+                        finishRace("Ngựa 1", selectedHorses);
+                    } else if (seekBarHorse2.getProgress() >= 100) {
+                        raceOver[0] = true;
+                        finishRace("Ngựa 2", selectedHorses);
+                    } else if (seekBarHorse3.getProgress() >= 100) {
+                        raceOver[0] = true;
+                        finishRace("Ngựa 3", selectedHorses);
+                    }
+                });
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void finishRace(String winner, ArrayList<String> selectedHorses) {
+        isRacing = false;
+
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String usersJson = prefs.getString("users", "{}");
+
+        try {
+            JSONObject users = new JSONObject(usersJson);
+            String loggedInUser = prefs.getString("loggedInUser", null);
+
+            if (loggedInUser != null && users.has(loggedInUser)) {
+                JSONObject userData = users.getJSONObject(loggedInUser);
+
+                if (selectedHorses.contains(winner)) {
+                    currentPoints += betPoints; // Thắng được cộng điểm
+                } else {
+                    currentPoints -= betPoints; // Thua bị trừ điểm
+                }
+
+                userData.put("points", currentPoints);
+                users.put(loggedInUser, userData);
+                prefs.edit().putString("users", users.toString()).apply();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Dừng nhạc nền khi kết thúc cuộc đua
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.stop();
+            backgroundMusicPlayer.release();
+        }
+
+        Intent intent = new Intent(RaceActivity.this, ResultActivity.class);
+        intent.putExtra("winner", winner);
+        intent.putExtra("selectedHorses", selectedHorses);
+        intent.putExtra("currentPoints", currentPoints);
+        intent.putExtra("betPoints", betPoints);
+        startActivity(intent);
+        finish();
     }
 
     private void logoutUser() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         prefs.edit().remove("loggedInUser").apply();
 
+        // Dừng nhạc nền khi người dùng đăng xuất
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.stop();
+            backgroundMusicPlayer.release();
+        }
+
         Intent intent = new Intent(RaceActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }
 
+    // Hàm phát âm thanh
+    private void playSound(int soundResource) {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        mediaPlayer = MediaPlayer.create(this, soundResource);
+        mediaPlayer.start();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayerBackground != null) {
-            mediaPlayerBackground.release();
-            mediaPlayerBackground = null;
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
         }
-
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.release();
         }
     }
 }
