@@ -2,6 +2,9 @@ package com.example.horseracing;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.AudioAttributes;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -37,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private TextView tvSignup;
+    private MediaPlayer mediaPlayer;
+    private SoundPool soundPool;
+    private int clickSoundId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +55,33 @@ public class LoginActivity extends AppCompatActivity {
 
         tvSignup = findViewById(R.id.tvSignup);
 
+        // Loop music
+        mediaPlayer = MediaPlayer.create(this, R.raw.signup);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+
+        // 🔊 Khởi tạo SoundPool để phát âm thanh khi nhấn nút
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(1)
+                .setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_GAME)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build())
+                .build();
+
+        clickSoundId = soundPool.load(this, R.raw.click_sound, 1);
+
+
         tvSignup.setOnClickListener(v -> {
+            soundPool.play(clickSoundId, 1, 1, 0, 0, 1); // 🔊 Phát âm thanh
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
 
-        btnLogin.setOnClickListener(view -> loginUser());
+        btnLogin.setOnClickListener(view -> {
+            soundPool.play(clickSoundId, 1, 1, 0, 0, 1); // 🔊 Phát âm thanh
+            loginUser();
+        });
     }
 
     private void loginUser() {
@@ -79,6 +106,13 @@ public class LoginActivity extends AppCompatActivity {
                     // Lưu tài khoản đăng nhập vào SharedPreferences
                     prefs.edit().putString("loggedInUser", username).apply();
 
+                    // Pause music
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+
                     // Chuyển qua màn hình đua ngựa
                     Intent intent = new Intent(LoginActivity.this, RaceActivity.class);
                     intent.putExtra("currentPoints", currentPoints);
@@ -92,6 +126,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
         }
     }
 }
