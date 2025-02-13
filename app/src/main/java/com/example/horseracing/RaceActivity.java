@@ -2,6 +2,7 @@ package com.example.horseracing;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -32,6 +33,7 @@ public class RaceActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Random random = new Random();
     private boolean isRacing = false;
+    private MediaPlayer mediaPlayer, backgroundMusicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,6 @@ public class RaceActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         loggedInUser = prefs.getString("loggedInUser", null);
         String usersJson = prefs.getString("users", "{}");
-
 
         try {
             JSONObject users = new JSONObject(usersJson);
@@ -74,8 +75,21 @@ public class RaceActivity extends AppCompatActivity {
         // Lấy điểm từ SharedPreferences
         tvCurrentPoints.setText("Điểm: " + currentPoints);
 
-        btnStartRace.setOnClickListener(view -> startRace());
+        btnStartRace.setOnClickListener(view -> {
+            playSound(R.raw.click_sound);
+            startRace();
+        });
+
         btnLogout.setOnClickListener(view -> logoutUser());
+
+        cbHorse1.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+        cbHorse2.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+        cbHorse3.setOnCheckedChangeListener((buttonView, isChecked) -> playSound(R.raw.pick));
+
+        // Phát nhạc nền
+        backgroundMusicPlayer = MediaPlayer.create(this, R.raw.background_theme);
+        backgroundMusicPlayer.setLooping(true); // Đặt nhạc nền lặp lại
+        backgroundMusicPlayer.start();
     }
 
     private void startRace() {
@@ -108,6 +122,9 @@ public class RaceActivity extends AppCompatActivity {
         seekBarHorse1.setProgress(0);
         seekBarHorse2.setProgress(0);
         seekBarHorse3.setProgress(0);
+
+        // Phát tiếng ngựa khi bắt đầu đua
+        playSound(R.raw.horse1);
 
         final boolean[] raceOver = {false};
 
@@ -166,6 +183,12 @@ public class RaceActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // Dừng nhạc nền khi kết thúc cuộc đua
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.stop();
+            backgroundMusicPlayer.release();
+        }
+
         Intent intent = new Intent(RaceActivity.this, ResultActivity.class);
         intent.putExtra("winner", winner);
         intent.putExtra("selectedHorses", selectedHorses);
@@ -179,9 +202,34 @@ public class RaceActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         prefs.edit().remove("loggedInUser").apply();
 
+        // Dừng nhạc nền khi người dùng đăng xuất
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.stop();
+            backgroundMusicPlayer.release();
+        }
+
         Intent intent = new Intent(RaceActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }
-}
 
+    // Hàm phát âm thanh
+    private void playSound(int soundResource) {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        mediaPlayer = MediaPlayer.create(this, soundResource);
+        mediaPlayer.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        if (backgroundMusicPlayer != null) {
+            backgroundMusicPlayer.release();
+        }
+    }
+}
